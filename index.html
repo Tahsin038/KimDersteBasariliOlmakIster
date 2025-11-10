@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kim Derste Başarılı Olmak İster</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Ana Konteyner -->
+    <div class="container">
+        <!-- Başlık -->
+        <div class="header">
+            <h1>🎓 Kim Derste Başarılı Olmak İster</h1>
+            <p class="subtitle">Eğitim ve Öğrenme Platformu</p>
+        </div>
+
+        <!-- Hoş Geldiniz Ekranı -->
+        <div id="welcomeScreen" class="screen active">
+            <div class="welcome-content">
+                <h2>Hoş Geldiniz!</h2>
+                <p>Lütfen seviyenizi ve sınıfınızı seçin:</p>
+                
+                <div class="level-groups">
+                    <!-- Ortaokul Grubu -->
+                    <div class="level-group">
+                        <h3 class="group-title">📚 Ortaokul</h3>
+                        <div class="class-selection">
+                            <button class="class-btn" data-class="5">5. Sınıf</button>
+                            <button class="class-btn" data-class="6">6. Sınıf</button>
+                            <button class="class-btn" data-class="7">7. Sınıf</button>
+                            <button class="class-btn" data-class="8">8. Sınıf</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Lise Grubu -->
+                    <div class="level-group">
+                        <h3 class="group-title">🎓 Lise</h3>
+                        <div class="class-selection">
+                            <button class="class-btn" data-class="9">9. Sınıf</button>
+                            <button class="class-btn" data-class="10">10. Sınıf</button>
+                            <button class="class-btn" data-class="11">11. Sınıf</button>
+                            <button class="class-btn" data-class="12">12. Sınıf</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Konu Seçim Ekranı -->
+        <div id="subjectScreen" class="screen">
+            <div class="welcome-content">
+                <h2>Konu Seçimi</h2>
+                <p id="selectedClassText">Seçilen Sınıf: <span id="selectedClassDisplay"></span></p>
+                <p>Hangi konudan sorular görmek istersiniz?</p>
+                
+                <div class="subject-selection">
+                    <button class="subject-btn" data-subject="Matematik">
+                        <span class="subject-icon">🔢</span>
+                        <span class="subject-name">Matematik</span>
+                    </button>
+                    <button class="subject-btn" data-subject="Türkçe">
+                        <span class="subject-icon">📖</span>
+                        <span class="subject-name">Türkçe</span>
+                    </button>
+                    <button class="subject-btn" data-subject="Fen Bilgisi">
+                        <span class="subject-icon">🔬</span>
+                        <span class="subject-name">Fen Bilgisi</span>
+                    </button>
+                    <button class="subject-btn" data-subject="Sosyal Bilgiler">
+                        <span class="subject-icon">🌍</span>
+                        <span class="subject-name">Sosyal Bilgiler</span>
+                    </button>
+                    <button class="subject-btn mixed" data-subject="Karışık">
+                        <span class="subject-icon">🎲</span>
+                        <span class="subject-name">Karışık</span>
+                    </button>
+                </div>
+                
+                <button id="backToClassBtn" class="back-btn">← Geri Dön</button>
+            </div>
+        </div>
+
+        <!-- Oyun Ekranı -->
+        <div id="gameScreen" class="screen">
+            <div class="game-container">
+                <!-- Sol Panel - Para Ağacı -->
+                <div class="left-panel">
+                    <div class="money-tree">
+                        <h3>💰 Para Ağacı</h3>
+                        <div id="moneyLevels" class="money-levels"></div>
+                    </div>
+                </div>
+
+                <!-- Orta Panel - Soru Alanı -->
+                <div class="center-panel">
+                    <div class="question-info">
+                        <span id="selectedClass" class="class-badge"></span>
+                        <span id="currentSubject" class="subject-badge"></span>
+                    </div>
+                    
+                    <div class="question-box">
+                        <div class="question-number">Soru <span id="questionNumber">1</span>/15</div>
+                        <h2 id="questionText" class="question">Soru yükleniyor...</h2>
+                    </div>
+
+                    <div class="answers-grid">
+                        <button class="answer-btn" data-answer="A">
+                            <span class="answer-letter">A:</span>
+                            <span class="answer-text">Cevap 1</span>
+                        </button>
+                        <button class="answer-btn" data-answer="B">
+                            <span class="answer-letter">B:</span>
+                            <span class="answer-text">Cevap 2</span>
+                        </button>
+                        <button class="answer-btn" data-answer="C">
+                            <span class="answer-letter">C:</span>
+                            <span class="answer-text">Cevap 3</span>
+                        </button>
+                        <button class="answer-btn" data-answer="D">
+                            <span class="answer-letter">D:</span>
+                            <span class="answer-text">Cevap 4</span>
+                        </button>
+                    </div>
+
+                    <!-- Jokerler -->
+                    <div class="jokers">
+                        <button id="homeBtn" class="home-btn" title="Anasayfaya Dön">
+                            <span class="home-icon">🏠</span>
+                            <span class="home-text">Anasayfa</span>
+                        </button>
+                        <button id="joker5050" class="joker-btn" title="50:50 Jokeri">
+                            <span class="joker-icon">✂️</span>
+                            <span class="joker-text">50:50</span>
+                        </button>
+                        <button id="jokerAudience" class="joker-btn" title="Seyirci Jokeri">
+                            <span class="joker-icon">👥</span>
+                            <span class="joker-text">Seyirci</span>
+                        </button>
+                        <button id="jokerPhone" class="joker-btn" title="Telefon Jokeri">
+                            <span class="joker-icon">📞</span>
+                            <span class="joker-text">Telefon</span>
+                        </button>
+                    </div>
+                    
+                    <div class="game-controls">
+                        <button id="backToHomeBtn" class="back-to-home-btn">🏠 Anasayfaya Dön</button>
+                    </div>
+                </div>
+
+                <!-- Sağ Panel - Bilgi -->
+                <div class="right-panel">
+                    <div class="info-box">
+                        <h3>📊 Bilgiler</h3>
+                        <div class="info-item">
+                            <span class="info-label">Toplam Soru:</span>
+                            <span class="info-value">15</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Kalan Joker:</span>
+                            <span id="remainingJokers" class="info-value">3</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Güvenli Nokta:</span>
+                            <span class="info-value">5. Soru</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kazandınız Ekranı -->
+        <div id="winScreen" class="screen">
+            <div class="result-content">
+                <div class="result-icon">🎉</div>
+                <h2>Tebrikler!</h2>
+                <p class="result-message">Oyunu kazandınız!</p>
+                <p class="result-prize">Kazandığınız Para: <span id="winAmount">1.000.000 ₺</span></p>
+                <button id="playAgainWin" class="restart-btn">Tekrar Oyna</button>
+            </div>
+        </div>
+
+        <!-- Kaybettiniz Ekranı -->
+        <div id="loseScreen" class="screen">
+            <div class="result-content">
+                <div class="result-icon">😢</div>
+                <h2>Oyun Bitti!</h2>
+                <p class="result-message">Yanlış cevap verdiniz.</p>
+                <p class="result-prize">Kazandığınız Para: <span id="loseAmount">0 ₺</span></p>
+                <button id="playAgainLose" class="restart-btn">Tekrar Oyna</button>
+            </div>
+        </div>
+
+        <!-- Joker Modal -->
+        <div id="jokerModal" class="modal">
+            <div class="modal-content">
+                <h3 id="jokerTitle">Joker Kullanıldı</h3>
+                <p id="jokerMessage">Joker mesajı</p>
+                <button id="closeModal" class="modal-btn">Tamam</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
