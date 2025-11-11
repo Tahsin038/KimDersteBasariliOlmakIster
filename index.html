@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kim Derste Başarılı Olmak İster</title>
+    <title>Kim Milyoner Olmak İster - Okul Versiyonu</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,78 +11,46 @@
     <div class="container">
         <!-- Başlık -->
         <div class="header">
-            <h1>🎓 Kim Derste Başarılı Olmak İster</h1>
-            <p class="subtitle">Eğitim ve Öğrenme Platformu</p>
+            <h1>🎓 Kim Milyoner Olmak İster</h1>
+            <p class="subtitle">Okul Dersleri Özel</p>
         </div>
 
         <!-- Hoş Geldiniz Ekranı -->
         <div id="welcomeScreen" class="screen active">
             <div class="welcome-content">
                 <h2>Hoş Geldiniz!</h2>
-                <p>Bol Şanslar</p>
-                
-                <div class="level-groups">
-                    <!-- Ortaokul Grubu -->
-                    <div class="level-group">
-                        <h3 class="group-title">📚 Ortaokul</h3>
-                        <div class="class-selection">
-                            <button class="class-btn" data-class="5">5. Sınıf</button>
-                            <button class="class-btn" data-class="6">6. Sınıf</button>
-                            <button class="class-btn" data-class="7">7. Sınıf</button>
-                            <button class="class-btn" data-class="8">8. Sınıf</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Lise Grubu -->
-                    <div class="level-group">
-                        <h3 class="group-title">🎓 Lise</h3>
-                        <div class="class-selection">
-                            <button class="class-btn" data-class="9">9. Sınıf</button>
-                            <button class="class-btn" data-class="10">10. Sınıf</button>
-                            <button class="class-btn" data-class="11">11. Sınıf</button>
-                            <button class="class-btn" data-class="12">12. Sınıf</button>
-                        </div>
-                    </div>
+                <p>Lütfen sınıfınızı seçin:</p>
+                <div class="class-selection">
+                    <button class="class-btn" data-class="5">5. Sınıf</button>
+                    <button class="class-btn" data-class="6">6. Sınıf</button>
+                    <button class="class-btn" data-class="7">7. Sınıf</button>
+                    <button class="class-btn" data-class="8">8. Sınıf</button>
                 </div>
             </div>
         </div>
-        
+
         <!-- Konu Seçim Ekranı -->
-        <div id="subjectScreen" class="screen">
+        <div id="topicScreen" class="screen">
             <div class="welcome-content">
                 <h2>Konu Seçimi</h2>
-                <p id="selectedClassText">Seçilen Sınıf: <span id="selectedClassDisplay"></span></p>
-                <p>Hangi konudan sorular görmek istersiniz?</p>
-                
-                <div class="subject-selection">
-                    <button class="subject-btn" data-subject="Matematik">
-                        <span class="subject-icon">🔢</span>
-                        <span class="subject-name">Matematik</span>
-                    </button>
-                    <button class="subject-btn" data-subject="Türkçe">
-                        <span class="subject-icon">📖</span>
-                        <span class="subject-name">Türkçe</span>
-                    </button>
-                    <button class="subject-btn" data-subject="Fen Bilgisi">
-                        <span class="subject-icon">🔬</span>
-                        <span class="subject-name">Fen Bilgisi</span>
-                    </button>
-                    <button class="subject-btn" data-subject="Sosyal Bilgiler">
-                        <span class="subject-icon">🌍</span>
-                        <span class="subject-name">Sosyal Bilgiler</span>
-                    </button>
-                    <button class="subject-btn mixed" data-subject="Karışık">
-                        <span class="subject-icon">🎲</span>
-                        <span class="subject-name">Karışık</span>
-                    </button>
+                <p>Lütfen bir konu seçin:</p>
+                <div class="topic-selection">
+                    <button class="topic-btn" data-topic="matematik">Matematik</button>
+                    <button class="topic-btn" data-topic="turkce">Türkçe</button>
+                    <button class="topic-btn" data-topic="fen">Fen Bilgisi</button>
+                    <button class="topic-btn" data-topic="sosyal">Sosyal Bilgiler</button>
+                    <button class="topic-btn" data-topic="karisik">Karışık</button>
                 </div>
-                
-                <button id="backToClassBtn" class="back-btn">← Geri Dön</button>
+                <button id="backToClass" class="back-btn">← Geri Dön</button>
             </div>
         </div>
 
         <!-- Oyun Ekranı -->
         <div id="gameScreen" class="screen">
+            <button id="returnToMain" class="return-to-main" title="Ana Sayfaya Dön">
+                <span class="icon">🏠</span>
+                <span class="text">Ana Sayfa</span>
+            </button>
             <div class="game-container">
                 <!-- Sol Panel - Para Ağacı -->
                 <div class="left-panel">
@@ -125,10 +93,6 @@
 
                     <!-- Jokerler -->
                     <div class="jokers">
-                        <button id="homeBtn" class="home-btn" title="Anasayfaya Dön">
-                            <span class="home-icon">🏠</span>
-                            <span class="home-text">Anasayfa</span>
-                        </button>
                         <button id="joker5050" class="joker-btn" title="50:50 Jokeri">
                             <span class="joker-icon">✂️</span>
                             <span class="joker-text">50:50</span>
@@ -141,10 +105,6 @@
                             <span class="joker-icon">📞</span>
                             <span class="joker-text">Telefon</span>
                         </button>
-                    </div>
-                    
-                    <div class="game-controls">
-                        <button id="backToHomeBtn" class="back-to-home-btn">🏠 Anasayfaya Dön</button>
                     </div>
                 </div>
 
