@@ -300,12 +300,12 @@ function loadQuestion() {
     updateMoneyTree();
 }
 
-// Cevap Seçimi
-answerBtns.forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-        checkAnswer(index);
-    });
-});
+// Cevap Seçimi - Bu kısım aşağıda yeni özelliklerle birlikte tanımlanacak
+// answerBtns.forEach((btn, index) => {
+//     btn.addEventListener('click', () => {
+//         checkAnswer(index);
+//     });
+// });
 
 function checkAnswer(selectedIndex) {
     const question = gameState.questions[gameState.currentQuestion];
@@ -457,3 +457,602 @@ playAgainWinBtn.addEventListener('click', () => {
 playAgainLoseBtn.addEventListener('click', () => {
     showScreen(welcomeScreen);
 });
+
+// ============================================
+// YENİ ÖZELLİKLER
+// ============================================
+
+// Ses Sistemi
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let soundEnabled = true;
+let musicEnabled = true;
+let timerDuration = 30;
+let timerInterval = null;
+let timeLeft = timerDuration;
+
+// Geliştirilmiş ses efektleri (Web Audio API ile)
+function playSound(type) {
+    if (!soundEnabled) return;
+    
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    const oscillator2 = audioContext.createOscillator();
+    const gainNode2 = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    switch(type) {
+        case 'correct':
+            // Melodik doğru cevap sesi
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 523.25; // C5
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+            
+            // İkinci nota
+            oscillator2.connect(gainNode2);
+            gainNode2.connect(audioContext.destination);
+            oscillator2.type = 'sine';
+            oscillator2.frequency.value = 659.25; // E5
+            gainNode2.gain.setValueAtTime(0.2, audioContext.currentTime + 0.15);
+            gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            oscillator2.start(audioContext.currentTime + 0.15);
+            oscillator2.stop(audioContext.currentTime + 0.5);
+            break;
+            
+        case 'wrong':
+            // Dramatik yanlış cevap sesi
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.value = 200;
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.8);
+            break;
+            
+        case 'joker':
+            // Eğlenceli joker sesi
+            oscillator.type = 'triangle';
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.2);
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+            break;
+            
+        case 'win':
+            // Zafer melodisi
+            const notes = [523.25, 587.33, 659.25, 783.99]; // C5, D5, E5, G5
+            notes.forEach((freq, index) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.2, audioContext.currentTime + index * 0.15);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.15 + 0.3);
+                osc.start(audioContext.currentTime + index * 0.15);
+                osc.stop(audioContext.currentTime + index * 0.15 + 0.3);
+            });
+            break;
+            
+        case 'tick':
+            // Kısa tik sesi
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 880;
+            gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.05);
+            break;
+    }
+}
+
+// DOM Elementleri - Yeni Özellikler
+const soundToggle = document.getElementById('soundToggle');
+const musicToggle = document.getElementById('musicToggle');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettings = document.getElementById('closeSettings');
+const soundEffectsToggle = document.getElementById('soundEffectsToggle');
+const backgroundMusicToggle = document.getElementById('backgroundMusicToggle');
+const timerDurationSelect = document.getElementById('timerDuration');
+const timerDisplay = document.getElementById('timer');
+const viewAchievements = document.getElementById('viewAchievements');
+const viewStats = document.getElementById('viewStats');
+const achievementsModal = document.getElementById('achievementsModal');
+const closeAchievements = document.getElementById('closeAchievements');
+const statsModal = document.getElementById('statsModal');
+const closeStats = document.getElementById('closeStats');
+
+// Süre Sayacı Fonksiyonları
+function startTimer() {
+    if (timerDuration === 0) return; // Sınırsız mod
+    
+    timeLeft = timerDuration;
+    timerDisplay.textContent = timeLeft;
+    timerDisplay.classList.remove('warning');
+    
+    if (timerInterval) clearInterval(timerInterval);
+    
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+        
+        if (timeLeft <= 10) {
+            timerDisplay.classList.add('warning');
+            playSound('tick');
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showModal('Süre Doldu!', 'Zamanınız doldu. Yanlış cevap sayılıyor.');
+            setTimeout(() => {
+                endGame(false);
+            }, 2000);
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+// Başarımlar Sistemi
+const achievements = [
+    { id: 'first_win', name: 'İlk Zafer', desc: 'İlk oyununu kazan', icon: '🏆', unlocked: false },
+    { id: 'no_joker', name: 'Joker Yok', desc: 'Hiç joker kullanmadan kazan', icon: '🎯', unlocked: false },
+    { id: 'speed_demon', name: 'Hız Canavarı', desc: '5 soruyu 10 saniyede cevapla', icon: '⚡', unlocked: false },
+    { id: 'perfect_score', name: 'Mükemmel Skor', desc: '15 soruyu doğru cevapla', icon: '💯', unlocked: false },
+    { id: 'math_master', name: 'Matematik Ustası', desc: 'Matematik konusunda kazan', icon: '🔢', unlocked: false },
+    { id: 'language_expert', name: 'Dil Uzmanı', desc: 'Türkçe konusunda kazan', icon: '📚', unlocked: false },
+    { id: 'science_genius', name: 'Fen Dehası', desc: 'Fen Bilgisi konusunda kazan', icon: '🔬', unlocked: false },
+    { id: 'history_buff', name: 'Tarih Bilgini', desc: 'Sosyal Bilgiler konusunda kazan', icon: '🏛️', unlocked: false }
+];
+
+// İstatistikler
+let stats = {
+    totalGames: 0,
+    totalWins: 0,
+    totalMoney: 0,
+    correctAnswers: 0,
+    totalAnswers: 0
+};
+
+// LocalStorage'dan verileri yükle
+function loadData() {
+    const savedAchievements = localStorage.getItem('achievements');
+    const savedStats = localStorage.getItem('stats');
+    const savedSettings = localStorage.getItem('settings');
+    
+    if (savedAchievements) {
+        const loaded = JSON.parse(savedAchievements);
+        loaded.forEach(saved => {
+            const achievement = achievements.find(a => a.id === saved.id);
+            if (achievement) achievement.unlocked = saved.unlocked;
+        });
+    }
+    
+    if (savedStats) {
+        stats = JSON.parse(savedStats);
+    }
+    
+    if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        soundEnabled = settings.soundEnabled !== undefined ? settings.soundEnabled : true;
+        musicEnabled = settings.musicEnabled !== undefined ? settings.musicEnabled : true;
+        timerDuration = settings.timerDuration !== undefined ? settings.timerDuration : 30;
+        
+        soundEffectsToggle.checked = soundEnabled;
+        backgroundMusicToggle.checked = musicEnabled;
+        timerDurationSelect.value = timerDuration;
+        
+        updateControlButtons();
+    }
+}
+
+// Verileri kaydet
+function saveData() {
+    localStorage.setItem('achievements', JSON.stringify(achievements));
+    localStorage.setItem('stats', JSON.stringify(stats));
+    localStorage.setItem('settings', JSON.stringify({
+        soundEnabled,
+        musicEnabled,
+        timerDuration
+    }));
+}
+
+// Başarım kilidi aç
+function unlockAchievement(id) {
+    const achievement = achievements.find(a => a.id === id);
+    if (achievement && !achievement.unlocked) {
+        achievement.unlocked = true;
+        playSound('win');
+        showModal('🎉 Başarım Kazanıldı!', `${achievement.icon} ${achievement.name}: ${achievement.desc}`);
+        saveData();
+    }
+}
+
+// Başarımları göster
+function displayAchievements() {
+    const list = document.getElementById('achievementsList');
+    list.innerHTML = '';
+    
+    achievements.forEach(achievement => {
+        const item = document.createElement('div');
+        item.className = `achievement-item ${achievement.unlocked ? '' : 'locked'}`;
+        item.innerHTML = `
+            <div class="achievement-icon">${achievement.icon}</div>
+            <div class="achievement-name">${achievement.name}</div>
+            <div class="achievement-desc">${achievement.desc}</div>
+        `;
+        list.appendChild(item);
+    });
+}
+
+// İstatistikleri göster
+function displayStats() {
+    document.getElementById('totalGames').textContent = stats.totalGames;
+    document.getElementById('totalWins').textContent = stats.totalWins;
+    document.getElementById('totalMoney').textContent = stats.totalMoney.toLocaleString('tr-TR') + ' ₺';
+    const percentage = stats.totalAnswers > 0 ? Math.round((stats.correctAnswers / stats.totalAnswers) * 100) : 0;
+    document.getElementById('correctAnswers').textContent = percentage + '%';
+}
+
+// Kontrol butonlarını güncelle
+function updateControlButtons() {
+    if (soundEnabled) {
+        soundToggle.classList.remove('muted');
+        soundToggle.querySelector('.icon').textContent = '🔊';
+    } else {
+        soundToggle.classList.add('muted');
+        soundToggle.querySelector('.icon').textContent = '🔇';
+    }
+    
+    if (musicEnabled) {
+        musicToggle.classList.remove('muted');
+        musicToggle.querySelector('.icon').textContent = '🎵';
+    } else {
+        musicToggle.classList.add('muted');
+        musicToggle.querySelector('.icon').textContent = '🔇';
+    }
+}
+
+// Event Listeners - Yeni Özellikler
+soundToggle.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    soundEffectsToggle.checked = soundEnabled;
+    updateControlButtons();
+    saveData();
+});
+
+musicToggle.addEventListener('click', () => {
+    musicEnabled = !musicEnabled;
+    backgroundMusicToggle.checked = musicEnabled;
+    updateControlButtons();
+    saveData();
+});
+
+settingsBtn.addEventListener('click', () => {
+    settingsModal.classList.add('active');
+});
+
+closeSettings.addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+});
+
+soundEffectsToggle.addEventListener('change', (e) => {
+    soundEnabled = e.target.checked;
+    updateControlButtons();
+    saveData();
+});
+
+backgroundMusicToggle.addEventListener('change', (e) => {
+    musicEnabled = e.target.checked;
+    updateControlButtons();
+    saveData();
+});
+
+timerDurationSelect.addEventListener('change', (e) => {
+    timerDuration = parseInt(e.target.value);
+    saveData();
+});
+
+viewAchievements.addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+    displayAchievements();
+    achievementsModal.classList.add('active');
+});
+
+closeAchievements.addEventListener('click', () => {
+    achievementsModal.classList.remove('active');
+});
+
+viewStats.addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+    displayStats();
+    statsModal.classList.add('active');
+});
+
+closeStats.addEventListener('click', () => {
+    statsModal.classList.remove('active');
+});
+
+// Cevap butonları için event listener'lar (ses ve istatistik desteği ile)
+answerBtns.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+        stopTimer();
+        stats.totalAnswers++;
+        
+        const question = gameState.questions[gameState.currentQuestion];
+        const isCorrect = index === question.correct;
+        
+        if (isCorrect) {
+            stats.correctAnswers++;
+            playSound('correct');
+        } else {
+            playSound('wrong');
+        }
+        
+        saveData();
+        checkAnswer(index);
+    });
+});
+
+// loadQuestion fonksiyonunu override et (süre sayacı ile)
+const _originalLoadQuestion = loadQuestion;
+loadQuestion = function() {
+    const question = gameState.questions[gameState.currentQuestion];
+    
+    document.getElementById('questionNumber').textContent = gameState.currentQuestion + 1;
+    document.getElementById('currentSubject').textContent = question.subject;
+    document.getElementById('questionText').textContent = question.question;
+    
+    answerBtns.forEach((btn, index) => {
+        btn.classList.remove('correct', 'wrong', 'hidden');
+        btn.disabled = false;
+        const answerText = btn.querySelector('.answer-text');
+        answerText.textContent = question.answers[index];
+    });
+    
+    updateMoneyTree();
+    startTimer(); // Süreyi başlat
+};
+
+// endGame fonksiyonunu override et
+const _originalEndGame = endGame;
+endGame = function(won) {
+    stopTimer();
+    stats.totalGames++;
+    
+    let finalScore = 0;
+    let prize = '0 ₺';
+    
+    if (won) {
+        stats.totalWins++;
+        finalScore = 5000000;
+        stats.totalMoney += finalScore;
+        prize = moneyTree[14].amount;
+        playSound('win');
+        unlockAchievement('first_win');
+        unlockAchievement('perfect_score');
+        
+        // Joker kullanılmadıysa
+        if (gameState.jokers.fifty && gameState.jokers.audience && gameState.jokers.phone) {
+            unlockAchievement('no_joker');
+        }
+        
+        // Konuya özel başarımlar
+        if (gameState.selectedTopic === 'matematik') unlockAchievement('math_master');
+        if (gameState.selectedTopic === 'turkce') unlockAchievement('language_expert');
+        if (gameState.selectedTopic === 'fen') unlockAchievement('science_genius');
+        if (gameState.selectedTopic === 'sosyal') unlockAchievement('history_buff');
+        
+        document.getElementById('winAmount').textContent = prize;
+        showScreen(winScreen);
+    } else {
+        // Güvenli noktalara göre para hesapla
+        if (gameState.currentQuestion >= 10) {
+            finalScore = 150000;
+            prize = moneyTree[9].amount;
+            stats.totalMoney += finalScore;
+        } else if (gameState.currentQuestion >= 5) {
+            finalScore = 10000;
+            prize = moneyTree[4].amount;
+            stats.totalMoney += finalScore;
+        }
+        document.getElementById('loseAmount').textContent = prize;
+        showScreen(loseScreen);
+    }
+    
+    // Liderlik tablosuna ekle
+    const playerName = prompt('Liderlik tablosuna eklemek için adınızı girin:', 'Oyuncu') || 'Anonim';
+    const topicNames = {
+        'matematik': 'Matematik',
+        'turkce': 'Türkçe',
+        'fen': 'Fen Bilgisi',
+        'sosyal': 'Sosyal Bilgiler',
+        'karisik': 'Karışık'
+    };
+    
+    addToLeaderboard(
+        playerName,
+        gameState.selectedClass,
+        topicNames[gameState.selectedTopic],
+        finalScore,
+        gameState.currentQuestion
+    );
+    
+    saveData();
+};
+
+// Joker kullanımında ses çal
+const originalJoker5050 = joker5050Btn.onclick;
+joker5050Btn.addEventListener('click', () => {
+    if (gameState.jokers.fifty) {
+        playSound('joker');
+    }
+});
+
+const originalJokerAudience = jokerAudienceBtn.onclick;
+jokerAudienceBtn.addEventListener('click', () => {
+    if (gameState.jokers.audience) {
+        playSound('joker');
+    }
+});
+
+const originalJokerPhone = jokerPhoneBtn.onclick;
+jokerPhoneBtn.addEventListener('click', () => {
+    if (gameState.jokers.phone) {
+        playSound('joker');
+    }
+});
+
+// Liderlik Tablosu Sistemi
+const leaderboardModal = document.getElementById('leaderboardModal');
+const viewLeaderboard = document.getElementById('viewLeaderboard');
+const closeLeaderboard = document.getElementById('closeLeaderboard');
+const filterBtns = document.querySelectorAll('.filter-btn');
+
+let leaderboard = [];
+let currentFilter = 'all';
+
+// Liderlik tablosunu yükle
+function loadLeaderboard() {
+    const saved = localStorage.getItem('leaderboard');
+    if (saved) {
+        leaderboard = JSON.parse(saved);
+    }
+}
+
+// Liderlik tablosunu kaydet
+function saveLeaderboard() {
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+}
+
+// Liderlik tablosuna skor ekle
+function addToLeaderboard(playerName, classLevel, topic, score, correctAnswers) {
+    const entry = {
+        name: playerName,
+        class: classLevel,
+        topic: topic,
+        score: score,
+        correctAnswers: correctAnswers,
+        date: new Date().toLocaleDateString('tr-TR')
+    };
+    
+    leaderboard.push(entry);
+    leaderboard.sort((a, b) => b.score - a.score);
+    
+    // En fazla 100 kayıt tut
+    if (leaderboard.length > 100) {
+        leaderboard = leaderboard.slice(0, 100);
+    }
+    
+    saveLeaderboard();
+}
+
+// Liderlik tablosunu göster
+function displayLeaderboard(filter = 'all') {
+    const list = document.getElementById('leaderboardList');
+    list.innerHTML = '';
+    
+    let filteredData = leaderboard;
+    if (filter !== 'all') {
+        filteredData = leaderboard.filter(entry => entry.class === filter);
+    }
+    
+    if (filteredData.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Henüz kayıt yok</p>';
+        return;
+    }
+    
+    filteredData.slice(0, 50).forEach((entry, index) => {
+        const item = document.createElement('div');
+        item.className = `leaderboard-item ${index < 3 ? 'top-3' : ''}`;
+        
+        let rankClass = '';
+        let rankIcon = '';
+        if (index === 0) {
+            rankClass = 'gold';
+            rankIcon = '🥇';
+        } else if (index === 1) {
+            rankClass = 'silver';
+            rankIcon = '🥈';
+        } else if (index === 2) {
+            rankClass = 'bronze';
+            rankIcon = '🥉';
+        }
+        
+        item.innerHTML = `
+            <div class="leaderboard-rank ${rankClass}">
+                ${rankIcon || (index + 1)}
+            </div>
+            <div class="leaderboard-info">
+                <div class="leaderboard-name">${entry.name}</div>
+                <div class="leaderboard-details">
+                    ${entry.class}. Sınıf • ${entry.topic} • ${entry.correctAnswers}/15 doğru • ${entry.date}
+                </div>
+            </div>
+            <div class="leaderboard-score">${entry.score.toLocaleString('tr-TR')} ₺</div>
+        `;
+        list.appendChild(item);
+    });
+}
+
+// Liderlik tablosu event listeners
+viewLeaderboard.addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+    loadLeaderboard();
+    displayLeaderboard(currentFilter);
+    leaderboardModal.classList.add('active');
+});
+
+closeLeaderboard.addEventListener('click', () => {
+    leaderboardModal.classList.remove('active');
+});
+
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        displayLeaderboard(currentFilter);
+    });
+});
+
+// endGame fonksiyonu yukarıda zaten tanımlandı, tekrar tanımlamaya gerek yok;
+
+// Ana menü butonları
+const viewLeaderboardMain = document.getElementById('viewLeaderboardMain');
+const viewAchievementsMain = document.getElementById('viewAchievementsMain');
+const viewStatsMain = document.getElementById('viewStatsMain');
+
+viewLeaderboardMain.addEventListener('click', () => {
+    loadLeaderboard();
+    displayLeaderboard(currentFilter);
+    leaderboardModal.classList.add('active');
+});
+
+viewAchievementsMain.addEventListener('click', () => {
+    displayAchievements();
+    achievementsModal.classList.add('active');
+});
+
+viewStatsMain.addEventListener('click', () => {
+    displayStats();
+    statsModal.classList.add('active');
+});
+
+// Sayfa yüklendiğinde verileri yükle
+loadData();
+loadLeaderboard();
+updateControlButtons();

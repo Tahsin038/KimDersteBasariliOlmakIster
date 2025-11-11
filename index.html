@@ -9,6 +9,19 @@
 <body>
     <!-- Ana Konteyner -->
     <div class="container">
+        <!-- Ses ve Ayarlar Kontrolleri -->
+        <div class="controls">
+            <button id="soundToggle" class="control-btn" title="Ses Aç/Kapat">
+                <span class="icon">🔊</span>
+            </button>
+            <button id="musicToggle" class="control-btn" title="Müzik Aç/Kapat">
+                <span class="icon">🎵</span>
+            </button>
+            <button id="settingsBtn" class="control-btn" title="Ayarlar">
+                <span class="icon">⚙️</span>
+            </button>
+        </div>
+
         <!-- Başlık -->
         <div class="header">
             <h1>🎓 Kim Milyoner Olmak İster</h1>
@@ -25,6 +38,20 @@
                     <button class="class-btn" data-class="6">6. Sınıf</button>
                     <button class="class-btn" data-class="7">7. Sınıf</button>
                     <button class="class-btn" data-class="8">8. Sınıf</button>
+                </div>
+                <div class="welcome-buttons">
+                    <button id="viewLeaderboardMain" class="feature-btn">
+                        <span class="btn-icon">🏆</span>
+                        <span class="btn-text">Liderlik Tablosu</span>
+                    </button>
+                    <button id="viewAchievementsMain" class="feature-btn">
+                        <span class="btn-icon">🎖️</span>
+                        <span class="btn-text">Başarımlar</span>
+                    </button>
+                    <button id="viewStatsMain" class="feature-btn">
+                        <span class="btn-icon">📊</span>
+                        <span class="btn-text">İstatistikler</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -51,6 +78,13 @@
                 <span class="icon">🏠</span>
                 <span class="text">Ana Sayfa</span>
             </button>
+            
+            <!-- Süre Sayacı -->
+            <div class="timer-container">
+                <div class="timer-label">Kalan Süre</div>
+                <div id="timer" class="timer">30</div>
+            </div>
+            
             <div class="game-container">
                 <!-- Sol Panel - Para Ağacı -->
                 <div class="left-panel">
@@ -159,6 +193,101 @@
                 <button id="closeModal" class="modal-btn">Tamam</button>
             </div>
         </div>
+
+        <!-- Ayarlar Modal -->
+        <div id="settingsModal" class="modal">
+            <div class="modal-content settings-modal">
+                <h3>⚙️ Ayarlar</h3>
+                <div class="settings-group">
+                    <label class="setting-item">
+                        <span>Ses Efektleri</span>
+                        <input type="checkbox" id="soundEffectsToggle" checked>
+                    </label>
+                    <label class="setting-item">
+                        <span>Arka Plan Müziği</span>
+                        <input type="checkbox" id="backgroundMusicToggle" checked>
+                    </label>
+                    <label class="setting-item">
+                        <span>Süre Sınırı</span>
+                        <select id="timerDuration">
+                            <option value="15">15 saniye</option>
+                            <option value="30" selected>30 saniye</option>
+                            <option value="45">45 saniye</option>
+                            <option value="60">60 saniye</option>
+                            <option value="0">Sınırsız</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="settings-buttons">
+                    <button id="viewAchievements" class="modal-btn secondary">🏆 Başarımlar</button>
+                    <button id="viewStats" class="modal-btn secondary">📊 İstatistikler</button>
+                    <button id="viewLeaderboard" class="modal-btn secondary">🥇 Liderlik Tablosu</button>
+                    <button id="closeSettings" class="modal-btn">Kapat</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Başarımlar Modal -->
+        <div id="achievementsModal" class="modal">
+            <div class="modal-content achievements-modal">
+                <h3>🏆 Başarımlar</h3>
+                <div id="achievementsList" class="achievements-list">
+                    <!-- Başarımlar dinamik olarak eklenecek -->
+                </div>
+                <button id="closeAchievements" class="modal-btn">Kapat</button>
+            </div>
+        </div>
+
+        <!-- İstatistikler Modal -->
+        <div id="statsModal" class="modal">
+            <div class="modal-content stats-modal">
+                <h3>📊 İstatistikleriniz</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalGames">0</div>
+                        <div class="stat-label">Toplam Oyun</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalWins">0</div>
+                        <div class="stat-label">Kazanılan Oyun</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalMoney">0 ₺</div>
+                        <div class="stat-label">Toplam Kazanç</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="correctAnswers">0%</div>
+                        <div class="stat-label">Doğru Cevap</div>
+                    </div>
+                </div>
+                <button id="closeStats" class="modal-btn">Kapat</button>
+            </div>
+        </div>
+
+        <!-- Liderlik Tablosu Modal -->
+        <div id="leaderboardModal" class="modal">
+            <div class="modal-content leaderboard-modal">
+                <h3>🥇 Liderlik Tablosu</h3>
+                <div class="leaderboard-filters">
+                    <button class="filter-btn active" data-filter="all">Tümü</button>
+                    <button class="filter-btn" data-filter="5">5. Sınıf</button>
+                    <button class="filter-btn" data-filter="6">6. Sınıf</button>
+                    <button class="filter-btn" data-filter="7">7. Sınıf</button>
+                    <button class="filter-btn" data-filter="8">8. Sınıf</button>
+                </div>
+                <div id="leaderboardList" class="leaderboard-list">
+                    <!-- Liderlik tablosu dinamik olarak eklenecek -->
+                </div>
+                <button id="closeLeaderboard" class="modal-btn">Kapat</button>
+            </div>
+        </div>
+
+        <!-- Ses Dosyaları (Web Audio API ile oluşturulacak) -->
+        <audio id="correctSound" preload="auto"></audio>
+        <audio id="wrongSound" preload="auto"></audio>
+        <audio id="jokerSound" preload="auto"></audio>
+        <audio id="winSound" preload="auto"></audio>
+        <audio id="backgroundMusic" loop preload="auto"></audio>
     </div>
 
     <script src="script.js"></script>
